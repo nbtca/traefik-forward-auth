@@ -10,7 +10,7 @@ env:
   IMAGE_NAME_FULL: ghcr.io/nbtca/traefik-forward-auth
   
 jobs:
-  dev_Deploy:
+  Build-and-Push-to-DockerHub:
   
     runs-on: ubuntu-latest
     permissions:
@@ -39,5 +39,5 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.IMAGE_NAME_FULL }}:dev
+            ${{ env.IMAGE_NAME_FULL }}
             ${{ env.IMAGE_NAME_FULL }}:latest
