@@ -2,16 +2,15 @@ name: Deploy for docker image
 
 on:
   push:
-    branches: ["master"]
-    
+    branches: ["master", "dev"]
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: traefik-forward-auth
   IMAGE_NAME_FULL: ghcr.io/nbtca/traefik-forward-auth
-  
+  IMAGE_TAG: ${{ github.ref_name == 'master' && 'latest' || github.ref_name }}
 jobs:
   Build-and-Push-to-DockerHub:
-  
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,7 +26,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}   
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push to DockerHub
         uses: docker/build-push-action@v3
@@ -40,4 +39,4 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.IMAGE_NAME_FULL }}
-            ${{ env.IMAGE_NAME_FULL }}:latest
+            ${{ env.IMAGE_NAME_FULL }}:${{ env.IMAGE_TAG }}
