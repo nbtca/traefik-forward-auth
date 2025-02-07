@@ -92,6 +92,8 @@ func (o *OIDC) GetUser(token string) (User, error) {
 		return user, err
 	}
 
+	fmt.Println("token", token)
+	fmt.Println("idToken", idToken)
 	claims := make(map[string]interface{})
 	idToken.Claims(&claims)
 	claimsJson, err := json.Marshal(claims)
