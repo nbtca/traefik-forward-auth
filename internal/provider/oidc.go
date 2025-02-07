@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
+	"fmt"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
@@ -98,12 +98,12 @@ func (o *OIDC) GetUser(token string) (User, error) {
 	if err != nil {
 		return user, err
 	}
-	log.Println("claims", string(claimsJson))
+	fmt.Println("claims", string(claimsJson))
 	// Extract custom claims
 	if err := idToken.Claims(&user); err != nil {
 		return user, err
 	}
-	log.Println("roles", user.Roles)
+	fmt.Println("roles", user.Roles)
 
 	return user, nil
 }
