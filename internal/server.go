@@ -92,7 +92,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 		}
 
 		// Validate cookie
-		email, err := ValidateCookie(r, c)
+		user, err := ValidateCookie(r, c)
 		if err != nil {
 			if err.Error() == "Cookie has expired" {
 				logger.Info("Cookie has expired")
@@ -103,18 +103,23 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 			}
 			return
 		}
-
 		// Validate user
-		valid := ValidateEmail(email, rule)
-		if !valid {
-			logger.WithField("email", email).Warn("Invalid email")
+		validUser := ValidateEmail(user.Email, rule)
+		if !validUser {
+			logger.WithField("email", user.Email).Warn("Invalid email")
 			http.Error(w, "Not authorized", 401)
 			return
 		}
-
+		// Validate roles
+		validRole := ValidateRoles(user, rule)
+		if !validRole {
+			logger.WithField("user", user).Warn("Roles mismatch")
+			http.Error(w, "Not authorized", 401)
+			return
+		}
 		// Valid request
 		logger.Debug("Allowing valid request")
-		w.Header().Set("X-Forwarded-User", email)
+		w.Header().Set("X-Forwarded-User", user.Email)
 		w.WriteHeader(200)
 	}
 }
@@ -179,7 +184,6 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 
 		// Get user
 		user, err := p.GetUser(token)
-		logger.WithField("user", user.Email).WithField("roles", user.Roles).Info("Got user")
 		if err != nil {
 			logger.WithField("error", err).Error("Error getting user")
 			http.Error(w, "Service unavailable", 503)
@@ -187,7 +191,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		}
 
 		// Generate cookie
-		http.SetCookie(w, MakeCookie(r, user.Email))
+		http.SetCookie(w, MakeCookieUser(r, user))
 		logger.WithFields(logrus.Fields{
 			"provider": providerName,
 			"redirect": redirect,

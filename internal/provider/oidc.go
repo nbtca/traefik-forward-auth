@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -92,15 +91,6 @@ func (o *OIDC) GetUser(token string) (User, error) {
 		return user, err
 	}
 
-	fmt.Println("token", token)
-	fmt.Println("idToken", idToken)
-	claims := make(map[string]interface{})
-	idToken.Claims(&claims)
-	claimsJson, err := json.Marshal(claims)
-	if err != nil {
-		return user, err
-	}
-	fmt.Println("claims", string(claimsJson))
 	// Extract custom claims
 	if err := idToken.Claims(&user); err != nil {
 		return user, err

@@ -65,3 +65,12 @@ func (p *OAuthProvider) OAuthExchangeCode(redirectURI, code string) (*oauth2.Tok
 	config := p.ConfigCopy(redirectURI)
 	return config.Exchange(p.ctx, code)
 }
+
+func (user *User) HasRole(role string) bool {
+	for _, userRole := range user.Roles {
+		if role == userRole {
+			return true
+		}
+	}
+	return false
+}

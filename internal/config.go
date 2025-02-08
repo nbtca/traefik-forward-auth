@@ -39,6 +39,7 @@ type Config struct {
 	Path                   string               `long:"url-path" env:"URL_PATH" default:"/_oauth" description:"Callback URL Path"`
 	SecretString           string               `long:"secret" env:"SECRET" description:"Secret used for signing (required)" json:"-"`
 	Whitelist              CommaSeparatedList   `long:"whitelist" env:"WHITELIST" env-delim:"," description:"Only allow given email addresses, can be set multiple times"`
+	Roles                  CommaSeparatedList   `long:"role" env:"ROLES" env-delim:"," description:"Add roles to authenticated user, can be set multiple times"`
 	Port                   int                  `long:"port" env:"PORT" default:"4181" description:"Port to listen on"`
 
 	Providers provider.Providers `group:"providers" namespace:"providers" env-namespace:"PROVIDERS"`
@@ -219,6 +220,10 @@ func (c *Config) parseUnknownFlag(option string, arg flags.SplitArgument, args [
 			list := CommaSeparatedList{}
 			list.UnmarshalFlag(val)
 			rule.Domains = list
+		case "roles":
+			list := CommaSeparatedList{}
+			list.UnmarshalFlag(val)
+			rule.Roles = list
 		default:
 			return args, fmt.Errorf("invalid route param: %v", option)
 		}
@@ -341,6 +346,7 @@ type Rule struct {
 	Provider  string
 	Whitelist CommaSeparatedList
 	Domains   CommaSeparatedList
+	Roles     CommaSeparatedList
 }
 
 // NewRule creates a new rule object
