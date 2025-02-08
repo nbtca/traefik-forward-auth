@@ -42,13 +42,60 @@
       max-width: 600px;
     }
 
-    .details-box {
-      border: 1px solid #ccc;
-      padding: 20px;
+    a {
+      color: #007aff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .expander {
+      width: 100%;
       margin-top: 20px;
       border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .expander-header {
+      cursor: pointer;
+      font-weight: 500;
+      padding: 12px 15px;
+      background-color: #f2f2f7;
+      color: #222;
+      text-align: left;
+      transition: background-color 0.2s ease;
+      border-bottom: 1px solid #eee;
+    }
+
+    .expander-header:hover {
+      background-color: #e6e6eb;
+    }
+
+    .expander-content {
+      padding: 15px;
+      display: none;
+      color: #444;
+      background-color: #fff;
+      border-top: 1px solid #eee;
+    }
+
+    .expander-header.active {
+      background-color: #e6e6eb;
+    }
+
+    .expander-header.active+.expander-content {
+      display: block;
     }
   </style>
+  <script>
+    function toggleExpander(header) {
+      header.classList.toggle('active');
+    }
+  </script>
 </head>
 
 <body>
@@ -56,9 +103,14 @@
     <div class="error-code">401</div>
     <h1>Unauthorized</h1>
     <p>You are not authorized to access this page. Please check your credentials or contact the administrator.</p>
-    <div class="details-box">
-      <h2>Details</h2>
-      <p>{{details}}</p>
+    <p><a href="javascript:history.back()">Return</a></p>
+    <div class="expander">
+      <div class="expander-header" onclick="toggleExpander(this)">
+        Detailed Information
+      </div>
+      <div class="expander-content">
+        <p>{{details}}</p>
+      </div>
     </div>
   </div>
 </body>

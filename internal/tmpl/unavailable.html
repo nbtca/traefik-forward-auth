@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Unavailable</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #fafafa;
+            color: #1d1d1f;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 0 auto;
+      max-width: 600px;
+    }
+
+        h1 {
+            font-size: 2.2em;
+            color: #222;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1em;
+            color: #444;
+            margin-bottom: 1.2em;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #007aff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error-code {
+            font-size: 3.5em;
+            color: #1d1d1f;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .expander {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .expander-header {
+            cursor: pointer;
+            font-weight: 500;
+            padding: 12px 15px;
+            background-color: #f2f2f7;
+            color: #222;
+            text-align: left;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #eee;
+        }
+
+        .expander-header:hover {
+            background-color: #e6e6eb;
+        }
+
+        .expander-content {
+            padding: 15px;
+            display: none;
+            color: #444;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        .expander-header.active {
+            background-color: #e6e6eb;
+        }
+
+        .expander-header.active+.expander-content {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleExpander(header) {
+            header.classList.toggle('active');
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="error-code">503</div>
+        <h1>Service Unavailable</h1>
+        <p>The service is temporarily unavailable. Please try again later.</p>
+        <p><a href="javascript:history.back()">Return</a></p>
+        <div class="expander">
+            <div class="expander-header" onclick="toggleExpander(this)">
+                Detailed Information
+            </div>
+            <div class="expander-content">
+                <p>{{details}}</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

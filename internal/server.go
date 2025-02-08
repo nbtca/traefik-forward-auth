@@ -1,7 +1,6 @@
 package tfa
 
 import (
-	"html/template"
 	"net/http"
 	"net/url"
 	"strings"
@@ -9,13 +8,11 @@ import (
 	_ "embed"
 
 	"github.com/nbtca/traefik-forward-auth/internal/provider"
+	"github.com/nbtca/traefik-forward-auth/internal/tmpl"
 
 	"github.com/sirupsen/logrus"
 	muxhttp "github.com/traefik/traefik/v2/pkg/muxer/http"
 )
-
-//go:embed tmpl/denied.html
-var accessDenied string
 
 // Server contains router and handler methods
 type Server struct {
@@ -84,23 +81,20 @@ func (s *Server) AllowHandler(rule string) http.HandlerFunc {
 	}
 }
 
-// Encode the text to prevent XSS (replace \n with <br> and escape HTML)
-func encodeText(text string) string {
-	lines := strings.Split(text, "\n")
-	encodedLines := make([]string, len(lines))
-	for i, m := range lines {
-		encodedLines[i] = template.HTMLEscapeString(m)
-	}
-	return strings.Join(encodedLines, "<br>")
-}
-
 // returns a 401 Unauthorized response with the access denied message
 func denyAccess(w http.ResponseWriter, r *http.Request, msg string) {
 	http.SetCookie(w, ClearCookie(r))
 	w.Header().Set("Content-type", "text/html")
 	w.WriteHeader(http.StatusUnauthorized)
-	accessDeniedWithDetails := strings.ReplaceAll(accessDenied, "{{details}}", encodeText(msg))
-	w.Write([]byte(accessDeniedWithDetails))
+	w.Write(tmpl.Build401Page(msg))
+}
+
+// returns a 503 Service Unavailable response with the service unavailable message
+func serviceUnavailable(w http.ResponseWriter, r *http.Request, msg string) {
+	http.SetCookie(w, ClearCookie(r))
+	w.Header().Set("Content-type", "text/html")
+	w.WriteHeader(http.StatusServiceUnavailable)
+	w.Write(tmpl.Build503Page(msg))
 }
 
 // AuthHandler Authenticates requests
@@ -143,7 +137,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 		if !validRole {
 			logger.WithField("user", user).Warn("Roles mismatch")
 			currentRoles := strings.Join(user.Roles, ",")
-			denyAccess(w, r, "Roles mismatch.\nYour roles:"+currentRoles+"\nRequired roles:"+strings.Join(requireRoles, ","))
+			denyAccess(w, r, "Roles mismatch.\nYour roles:\t"+currentRoles+"\nRequired roles:\t"+strings.Join(requireRoles, ","))
 			return
 		}
 		// Valid request
@@ -207,7 +201,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		token, err := p.ExchangeCode(redirectUri(r), r.URL.Query().Get("code"))
 		if err != nil {
 			logger.WithField("error", err).Error("Code exchange failed with provider")
-			http.Error(w, "Service unavailable", 503)
+			serviceUnavailable(w, r, "Code exchange failed with provider")
 			return
 		}
 
@@ -215,7 +209,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		user, err := p.GetUser(token)
 		if err != nil {
 			logger.WithField("error", err).Error("Error getting user")
-			http.Error(w, "Service unavailable", 503)
+			serviceUnavailable(w, r, "Error getting user")
 			return
 		}
 
@@ -255,7 +249,7 @@ func (s *Server) authRedirect(logger *logrus.Entry, w http.ResponseWriter, r *ht
 	err, nonce := Nonce()
 	if err != nil {
 		logger.WithField("error", err).Error("Error generating nonce")
-		http.Error(w, "Service unavailable", 503)
+		serviceUnavailable(w, r, "Error generating nonce")
 		return
 	}
 
