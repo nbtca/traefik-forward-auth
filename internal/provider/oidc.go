@@ -50,7 +50,7 @@ func (o *OIDC) Setup() error {
 		Endpoint:     o.provider.Endpoint(),
 
 		// "openid" is a required scope for OpenID Connect flows.
-		Scopes: []string{oidc.ScopeOpenID, "profile", "email", "role"},
+		Scopes: []string{oidc.ScopeOpenID, "profile", "email", "roles"},
 	}
 
 	// Create OIDC verifier
