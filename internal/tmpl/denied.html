@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="dark">
 
 <head>
   <title>401 Unauthorized</title>
@@ -11,6 +11,12 @@
       color: #1d1d1f;
       text-align: center;
       padding-top: 50px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: #eee;
     }
 
     h1 {
@@ -18,12 +24,22 @@
       font-size: 2.5em;
       font-weight: 600;
       margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+
+    body.dark-mode h1 {
+      color: #eee;
     }
 
     p {
       font-size: 1.2em;
       margin-bottom: 20px;
       color: #6e6e73;
+      transition: color 0.3s;
+    }
+
+    body.dark-mode p {
+      color: #a0a0a0;
     }
 
     .error-code {
@@ -31,6 +47,11 @@
       color: #1d1d1f;
       margin-bottom: 10px;
       font-weight: 700;
+      transition: color 0.3s;
+    }
+
+    body.dark-mode .error-code {
+      color: #eee;
     }
 
     .container {
@@ -40,12 +61,23 @@
       padding: 30px;
       margin: 0 auto;
       max-width: 600px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    body.dark-mode .container {
+      background-color: #242424;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     a {
       color: #007aff;
       text-decoration: none;
       font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    body.dark-mode a {
+      color: #4dabff;
     }
 
     a:hover {
@@ -58,6 +90,11 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.3s;
+    }
+
+    body.dark-mode .expander {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
     .expander-header {
@@ -67,12 +104,22 @@
       background-color: #f2f2f7;
       color: #222;
       text-align: left;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.2s ease, color 0.3s;
       border-bottom: 1px solid #eee;
+    }
+
+    body.dark-mode .expander-header {
+      background-color: #333;
+      color: #ddd;
+      border-bottom: 1px solid #555;
     }
 
     .expander-header:hover {
       background-color: #e6e6eb;
+    }
+
+    body.dark-mode .expander-header:hover {
+      background-color: #444;
     }
 
     .expander-content {
@@ -81,10 +128,21 @@
       color: #444;
       background-color: #fff;
       border-top: 1px solid #eee;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .expander-content {
+      background-color: #242424;
+      color: #ccc;
+      border-top: 1px solid #555;
     }
 
     .expander-header.active {
       background-color: #e6e6eb;
+    }
+
+    body.dark-mode .expander-header.active {
+      background-color: #444;
     }
 
     .expander-header.active+.expander-content {
@@ -95,6 +153,22 @@
     function toggleExpander(header) {
       header.classList.toggle('active');
     }
+    function setDarkMode() {
+      if (!window.matchMedia) {
+        console.log("matchMedia not supported");
+        return
+      }
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+    window.onload = setDarkMode;
+    document.addEventListener('DOMContentLoaded', function () {
+      setDarkMode();
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setDarkMode);
+    });
   </script>
 </head>
 
