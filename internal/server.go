@@ -1,8 +1,10 @@
 package tfa
 
 import (
+	"html/template"
 	"net/http"
 	"net/url"
+	"strings"
 
 	_ "embed"
 
@@ -82,12 +84,23 @@ func (s *Server) AllowHandler(rule string) http.HandlerFunc {
 	}
 }
 
-func denyAccess(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, ClearCookie(r))
+// Encode the text to prevent XSS (replace \n with <br> and escape HTML)
+func encodeText(text string) string {
+	lines := strings.Split(text, "\n")
+	encodedLines := make([]string, len(lines))
+	for i, m := range lines {
+		encodedLines[i] = template.HTMLEscapeString(m)
+	}
+	return strings.Join(encodedLines, "<br>")
+}
 
+// returns a 401 Unauthorized response with the access denied message
+func denyAccess(w http.ResponseWriter, r *http.Request, msg string) {
+	http.SetCookie(w, ClearCookie(r))
 	w.Header().Set("Content-type", "text/html")
 	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte(accessDenied))
+	accessDeniedWithDetails := strings.ReplaceAll(accessDenied, "{{details}}", encodeText(msg))
+	w.Write([]byte(accessDeniedWithDetails))
 }
 
 // AuthHandler Authenticates requests
@@ -122,14 +135,15 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 		validUser := ValidateEmail(user.Email, rule)
 		if !validUser {
 			logger.WithField("email", user.Email).Warn("Invalid email")
-			denyAccess(w, r)
+			denyAccess(w, r, "Invalid email")
 			return
 		}
 		// Validate roles
-		validRole := ValidateRoles(user, rule)
+		validRole, requireRoles := ValidateRoles(user, rule)
 		if !validRole {
 			logger.WithField("user", user).Warn("Roles mismatch")
-			denyAccess(w, r)
+			currentRoles := strings.Join(user.Roles, ",")
+			denyAccess(w, r, "Roles mismatch.\nYour roles:"+currentRoles+"\nRequired roles:"+strings.Join(requireRoles, ","))
 			return
 		}
 		// Valid request
@@ -151,7 +165,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 			logger.WithFields(logrus.Fields{
 				"error": err,
 			}).Warn("Error validating state")
-			denyAccess(w, r)
+			denyAccess(w, r, "Invalid state")
 			return
 		}
 
@@ -159,7 +173,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		c, err := FindCSRFCookie(r, state)
 		if err != nil {
 			logger.Info("Missing csrf cookie")
-			denyAccess(w, r)
+			denyAccess(w, r, "Missing csrf cookie")
 			return
 		}
 
@@ -170,7 +184,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 				"error":       err,
 				"csrf_cookie": c,
 			}).Warn("Error validating csrf cookie")
-			denyAccess(w, r)
+			denyAccess(w, r, "Invalid csrf cookie")
 			return
 		}
 
@@ -182,7 +196,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 				"csrf_cookie": c,
 				"provider":    providerName,
 			}).Warn("Invalid provider in csrf cookie")
-			denyAccess(w, r)
+			denyAccess(w, r, "Invalid provider")
 			return
 		}
 

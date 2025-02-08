@@ -1,158 +1,66 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      body {
-        background: linear-gradient(#500, #600);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        color: #fff;
-        overflow: hidden;
-        user-select: none;
-      }
 
-      @keyframes pulse {
-        from {
-          background: rgba(0, 0, 0, 0.3);
-          box-shadow: rgba(255, 0, 0, 0.3) 0px 0px 35px;
-          /* border-radius: 10px; */
-          border: 2px solid #c00;
-        }
+<head>
+  <title>401 Unauthorized</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #fafafa;
+      color: #1d1d1f;
+      text-align: center;
+      padding-top: 50px;
+    }
 
-        to {
-          background: rgba(0, 0, 0, 0.5);
-          box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px;
-          /* border-radius: 30px; */
-          border: 2px solid #400;
-        }
-      }
+    h1 {
+      color: #1d1d1f;
+      font-size: 2.5em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
 
-      @keyframes shake {
-        96% {
-          transform: rotate3d(0, 0.5, 0, 10deg);
-        }
-        49% {
-          transform: rotate3d(-0.4, 0.5, 0, -3deg);
-        }
+    p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: #6e6e73;
+    }
 
-        50% {
-          transform: rotate3d(0.7, 0.2, 0, 4deg);
-        }
+    .error-code {
+      font-size: 3.5em;
+      color: #1d1d1f;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
 
-        /* 98.2% {
-          transform: rotate3d(-0.4, 0.5, 1, -3deg);
-        }
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 0 auto;
+      max-width: 600px;
+    }
 
-        99% {
-          transform: rotate3d(0.7, 0.2, 0.5, 4deg);
-        } */
-      }
+    .details-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
 
-      svg {
-        position: absolute;
-        height: 70vh;
-        width: 70vw;
-        z-index: 1;
-      }
-      h1 {
-        font-size: 60pt;
-        font-family: "Courier New", Courier, monospace;
-        text-transform: uppercase;
-        letter-spacing: 0.7ch;
-        text-shadow: rgba(255, 128, 128, 0.8) 0px 0px 8px,
-          rgba(0, 0, 0, 1) 2px 2px 4px;
-      }
-      #shake {
-        width: 80vw;
-        height: 80vh;
-        position: absolute;
-        z-index: 10;
-        display: flex;
-
-        animation-duration: 4.5s;
-        animation-name: shake;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
-        animation-timing-function: linear;
-      }
-      #wrap {
-        text-align: center;
-        display: flex;
-        border-radius: 30px;
-        box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px;
-        flex: 1 1;
-
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        animation-duration: 1.3s;
-        animation-name: pulse;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
-        animation-timing-function: linear;
-      }
-
-      p {
-        font-size: 17pt;
-        max-width: 50vw;
-        text-align: center;
-        max-width: 600px;
-        line-height: 1.6em;
-      }
-
-      #titlebar {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 34px;
-          border-top-left-radius: 30px;
-          border-top-right-radius: 30px;
-          background: rgba(0, 0, 0, 0.2);
-          font-family: "Courier New", Courier, monospace;
-          font-weight: 900;
-          line-height: 34px;
-          text-transform: uppercase;
-          font-size: 22px;
-          letter-spacing: 1ch;
-          text-shadow: rgba(255, 128, 128, 0.8) 0px 0px 8px,
-          rgba(0, 0, 0, 1) 2px 2px 4px;
-      }
-
-      @media screen and (max-width: 1280px) {
-        h1 {
-          font-size: 40pt;
-        }
-        p {
-          max-width: 80vw;
-        }
-
-        #titlebar {
-            font-size: 1.7vw;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 173 150">
-      <path
-        d="m75.926 6-69 119.5 9.5 16.5h138l9.5-16.5-69-119.5z"
-        fill="#ff000000"
-        stroke="#00000022"
-        stroke-width="14"
-      />
-      <path d="M74.426 125h22v-17h-22zm0-29h22V49h-22z" fill="#00000044" />
-    </svg>
-    <div id="shake">
-      <div id="wrap">
-          <div id="titlebar">root://system/error/401</div>
-        <h1>Access Denied</h1>
-        <p>
-          You do not have access to the requested resource. Please contact your
-          system administrator for assistance.
-        </p>
-      </div>
+<body>
+  <div class="container">
+    <div class="error-code">401</div>
+    <h1>Unauthorized</h1>
+    <p>You are not authorized to access this page. Please check your credentials or contact the administrator.</p>
+    <div class="details-box">
+      <h2>Details</h2>
+      <p>{{details}}</p>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

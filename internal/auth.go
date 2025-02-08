@@ -78,7 +78,7 @@ func ValidateCookie(r *http.Request, c *http.Cookie) (*provider.User, error) {
 	return user, err
 }
 
-func ValidateRoles(user *provider.User, ruleName string) bool {
+func ValidateRoles(user *provider.User, ruleName string) (bool, []string) {
 	// Use global config by default
 	requireRoles := config.Roles
 	rule, ok := config.Rules[ruleName]
@@ -89,16 +89,16 @@ func ValidateRoles(user *provider.User, ruleName string) bool {
 
 	if len(requireRoles) == 0 {
 		// No roles required
-		return true
+		return true, requireRoles
 	}
 
 	for _, role := range requireRoles {
 		if !user.HasRole(role) {
 			// Role not found
-			return false
+			return false, requireRoles
 		}
 	}
-	return true
+	return true, requireRoles
 }
 
 // ValidateEmail checks if the given email address matches either a whitelisted
